@@ -19,6 +19,8 @@ public class ProductController {
     public ResponseEntity<Product> getProduct(@PathVariable Integer productId) {
         Product product = productService.getProductById(productId);
 
+//        System.out.println(product.getCreatedDate());
+
         if (product != null) {
             return ResponseEntity.status(HttpStatus.OK).body(product);
         } else {
