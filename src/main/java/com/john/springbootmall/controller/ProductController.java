@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 public class ProductController {
@@ -16,6 +17,18 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    // 當我們在實作列表(List)類型的 api 時，不論有沒有查到數據，那都要固定去返回 200 OK 的 http 狀態碼給前端
+    // 如果視作查詢單個數據的 api ，則是有查到數據才回 200 OK ，沒查到就要返回 404 Not Found
+
+    // 查詢整個商品列表
+    @GetMapping("/products")
+    public ResponseEntity<List<Product>> getProducts(){
+        List<Product> productList = productService.getProducts();
+
+        return ResponseEntity.status(HttpStatus.OK).body(productList);
+    }
+
+    // 查詢某一個特定 id 的商品
     @GetMapping("/products/{productId}")
     public ResponseEntity<Product> getProduct(@PathVariable Integer productId) {
         Product product = productService.getProductById(productId);
@@ -69,3 +82,4 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
+
