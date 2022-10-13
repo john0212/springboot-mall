@@ -59,4 +59,13 @@ public class ProductController {
 
         }
     }
+
+    @DeleteMapping("/products/{productId}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Integer productId){
+        // 不用像修改商品一樣要先去查看有沒有這個 id ，因為最終就是要去刪掉這項商品，不用去管說他是否真的存在
+
+        productService.deleteProductById(productId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
