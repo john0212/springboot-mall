@@ -27,8 +27,14 @@ public class ProductController {
     public ResponseEntity<List<Product>> getProducts(
             // 加上 required = false 代表說不一定要添加 category 這個參數，沒加這行的話就會導致沒有添加 category 這個參數就會產生錯誤
             // 如果前端沒有傳遞 category 這個參數過來時，這個值就是 null
+
+            // 查詢條件 Filtering
             @RequestParam(required = false) ProductCategory category,
-            @RequestParam(required = false) String search
+            @RequestParam(required = false) String search,
+
+            // 排序 Sorting
+            @RequestParam(defaultValue = "created_date") String orderBy, // 就是要去根據甚麼樣的欄位進行排序
+            @RequestParam(defaultValue = "desc") String sort     // 就是要去決定我們要從小排到大，還是大排到小
     ){
         // 會把前端傳過來的參數，統一的整理到 ProductQueryParams 的變數裡面，然後再將這個變數，丟到 getProducts() 裡做傳遞
         // 這樣做的好處，是以後如果還想添加新的查詢條件時，就不需要在像以前一樣，去修改 Service 層跟 Dao 層的方法定義
@@ -36,6 +42,8 @@ public class ProductController {
         ProductQueryParams productQueryParams = new ProductQueryParams();
         productQueryParams.setCategory(category);
         productQueryParams.setSearch(search);
+        productQueryParams.setOrderBy(orderBy);
+        productQueryParams.setSort(sort);
 
         List<Product> productList = productService.getProducts(productQueryParams);
 
