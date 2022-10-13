@@ -1,6 +1,7 @@
 package com.john.springbootmall.controller;
 
 import com.john.springbootmall.constant.ProductCategory;
+import com.john.springbootmall.dto.ProductQueryParams;
 import com.john.springbootmall.dto.ProductRequest;
 import com.john.springbootmall.model.Product;
 import com.john.springbootmall.service.ProductService;
@@ -29,7 +30,14 @@ public class ProductController {
             @RequestParam(required = false) ProductCategory category,
             @RequestParam(required = false) String search
     ){
-        List<Product> productList = productService.getProducts(category,search);
+        // 會把前端傳過來的參數，統一的整理到 ProductQueryParams 的變數裡面，然後再將這個變數，丟到 getProducts() 裡做傳遞
+        // 這樣做的好處，是以後如果還想添加新的查詢條件時，就不需要在像以前一樣，去修改 Service 層跟 Dao 層的方法定義
+        // 就只要在 ProductQueryParams 的 class 裡面再去新增一個變數，在一起把這個查詢條件給傳過去就好了
+        ProductQueryParams productQueryParams = new ProductQueryParams();
+        productQueryParams.setCategory(category);
+        productQueryParams.setSearch(search);
+
+        List<Product> productList = productService.getProducts(productQueryParams);
 
         return ResponseEntity.status(HttpStatus.OK).body(productList);
     }
