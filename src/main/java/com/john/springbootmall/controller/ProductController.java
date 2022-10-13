@@ -1,5 +1,6 @@
 package com.john.springbootmall.controller;
 
+import com.john.springbootmall.constant.ProductCategory;
 import com.john.springbootmall.dto.ProductRequest;
 import com.john.springbootmall.model.Product;
 import com.john.springbootmall.service.ProductService;
@@ -22,8 +23,13 @@ public class ProductController {
 
     // 查詢整個商品列表
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts(){
-        List<Product> productList = productService.getProducts();
+    public ResponseEntity<List<Product>> getProducts(
+            // 加上 required = false 代表說不一定要添加 category 這個參數，沒加這行的話就會導致沒有添加 category 這個參數就會產生錯誤
+            // 如果前端沒有傳遞 category 這個參數過來時，這個值就是 null
+            @RequestParam(required = false) ProductCategory category,
+            @RequestParam(required = false) String search
+    ){
+        List<Product> productList = productService.getProducts(category,search);
 
         return ResponseEntity.status(HttpStatus.OK).body(productList);
     }
