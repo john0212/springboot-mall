@@ -14,7 +14,7 @@ public class Product {
     private Integer price;
     private Integer stock;
     private String description;
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
+//    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
     private Date createdDate;
 //    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
     private Date lastModifiedDate;

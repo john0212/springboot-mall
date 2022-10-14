@@ -8,11 +8,15 @@ import com.john.springbootmall.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.List;
 
+@Validated
 @RestController
 public class ProductController {
 
@@ -34,7 +38,11 @@ public class ProductController {
 
             // 排序 Sorting
             @RequestParam(defaultValue = "created_date") String orderBy, // 就是要去根據甚麼樣的欄位進行排序
-            @RequestParam(defaultValue = "desc") String sort     // 就是要去決定我們要從小排到大，還是大排到小
+            @RequestParam(defaultValue = "desc") String sort,     // 就是要去決定我們要從小排到大，還是大排到小
+
+            // 分頁 pagination
+            @RequestParam(defaultValue = "5") @Max(1000) @Min(0) Integer limit,  // 這個參數是在說這次要取得幾筆數據
+            @RequestParam(defaultValue = "0") @Min(0) Integer offset  // 這個參數是在說我們要跳過多少筆數據
     ){
         // 會把前端傳過來的參數，統一的整理到 ProductQueryParams 的變數裡面，然後再將這個變數，丟到 getProducts() 裡做傳遞
         // 這樣做的好處，是以後如果還想添加新的查詢條件時，就不需要在像以前一樣，去修改 Service 層跟 Dao 層的方法定義
@@ -44,6 +52,8 @@ public class ProductController {
         productQueryParams.setSearch(search);
         productQueryParams.setOrderBy(orderBy);
         productQueryParams.setSort(sort);
+        productQueryParams.setLimit(limit);
+        productQueryParams.setOffset(offset);
 
         List<Product> productList = productService.getProducts(productQueryParams);
 
