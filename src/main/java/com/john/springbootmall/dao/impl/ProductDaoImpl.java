@@ -30,15 +30,7 @@ public class ProductDaoImpl implements ProductDao {
         Map<String, Object> map = new HashMap<>();
 
         // 查詢條件
-        if (productQueryParams.getCategory() != null) {
-            sql = sql + " AND category = :category";
-            map.put("category", productQueryParams.getCategory().name());
-        }
-
-        if (productQueryParams.getSearch() != null) {
-            sql = sql + " AND product_name LIKE :search";
-            map.put("search", "%" + productQueryParams.getSearch() + "%");
-        }
+        sql = addFilteringSql(sql,map,productQueryParams);
 
         // queryForObject() 主要用在取 count 值的時候
         // 第三個變數(Integer.class)是在表示說我們要將 count 的值去轉換成是一個 Integer 類型的返回值
@@ -59,21 +51,7 @@ public class ProductDaoImpl implements ProductDao {
         Map<String, Object> map = new HashMap<>();
 
         // 查詢條件
-        if (productQueryParams.getCategory() != null) {
-            sql = sql + " AND category = :category";
-            // 因為 category 的類型是 Enum 類型，所以我們要使用 .name() 將這個 Enum 類型去轉換成是一個字串，
-            // 然後才把這個字串的值，去加到這個 map 裡面，這裡要特別注意
-            map.put("category", productQueryParams.getCategory().name());
-        }
-
-        // LIKE 會搭配 % 一起使用
-        // %search -> 以甚麼 search 為結尾的數據
-        // search% -> 以 search 為開頭的數據
-        // %search% -> 只要有 search 這個字的都會找出來
-        if (productQueryParams.getSearch() != null) {
-            sql = sql + " AND product_name LIKE :search";
-            map.put("search", "%" + productQueryParams.getSearch() + "%");
-        }
+        sql = addFilteringSql(sql,map,productQueryParams);
 
         // 排序
         // 因為在前面有設定就算沒有填也有預設值，所以這邊不需要去判斷是否為 null
@@ -169,5 +147,24 @@ public class ProductDaoImpl implements ProductDao {
         map.put("productId", productId);
 
         namedParameterJdbcTemplate.update(sql, map);
+    }
+
+    private String addFilteringSql(String sql,Map<String,Object> map,ProductQueryParams productQueryParams){
+        if (productQueryParams.getCategory() != null) {
+            sql = sql + " AND category = :category";
+            // 因為 category 的類型是 Enum 類型，所以我們要使用 .name() 將這個 Enum 類型去轉換成是一個字串，
+            // 然後才把這個字串的值，去加到這個 map 裡面，這裡要特別注意
+            map.put("category", productQueryParams.getCategory().name());
+        }
+
+        // LIKE 會搭配 % 一起使用
+        // %search -> 以甚麼 search 為結尾的數據
+        // search% -> 以 search 為開頭的數據
+        // %search% -> 只要有 search 這個字的都會找出來
+        if (productQueryParams.getSearch() != null) {
+            sql = sql + " AND product_name LIKE :search";
+            map.put("search", "%" + productQueryParams.getSearch() + "%");
+        }
+        return sql;
     }
 }
