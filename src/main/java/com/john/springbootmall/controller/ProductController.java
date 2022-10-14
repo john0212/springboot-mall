@@ -5,6 +5,7 @@ import com.john.springbootmall.dto.ProductQueryParams;
 import com.john.springbootmall.dto.ProductRequest;
 import com.john.springbootmall.model.Product;
 import com.john.springbootmall.service.ProductService;
+import com.john.springbootmall.util.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class ProductController {
 
     // 查詢整個商品列表
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts(
+    public ResponseEntity<Page<Product>> getProducts(
             // 加上 required = false 代表說不一定要添加 category 這個參數，沒加這行的話就會導致沒有添加 category 這個參數就會產生錯誤
             // 如果前端沒有傳遞 category 這個參數過來時，這個值就是 null
 
@@ -55,9 +56,23 @@ public class ProductController {
         productQueryParams.setLimit(limit);
         productQueryParams.setOffset(offset);
 
+        // 取得 product list
         List<Product> productList = productService.getProducts(productQueryParams);
 
-        return ResponseEntity.status(HttpStatus.OK).body(productList);
+        // 取得 product 總數
+        // 這個方法是在表示說他會去根據傳進去的 productQueryParams 參數，
+        // 根據這些查詢條件，去計算出商品的總數有多少筆了
+        // 之所以要傳 productQueryParams 的參數進去，是因為在不同查詢條件下，查出來的商品總筆數會不同
+        Integer total = productService.countProduct(productQueryParams);
+
+        // 分頁
+        Page<Product> page = new Page<>();
+        page.setLimit(limit);
+        page.setOffset(offset);
+        page.setTotal(total);
+        page.setResult(productList);
+
+        return ResponseEntity.status(HttpStatus.OK).body(page);
     }
 
     // 查詢某一個特定 id 的商品
