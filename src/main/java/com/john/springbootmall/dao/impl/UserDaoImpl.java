@@ -27,17 +27,17 @@ public class UserDaoImpl implements UserDao {
         String sql = "INSERT INTO user(email,password,created_date,last_modified_date) " +
                 "VALUES (:email,:password,:createdDate,:lastModifiedDate)";
 
-        Map<String,Object> map = new HashMap<>();
-        map.put("email",userRegisterRequest.getEmail());
-        map.put("password",userRegisterRequest.getPassword());
+        Map<String, Object> map = new HashMap<>();
+        map.put("email", userRegisterRequest.getEmail());
+        map.put("password", userRegisterRequest.getPassword());
 
         Date date = new Date();
-        map.put("createdDate",date);
-        map.put("lastModifiedDate",date);
+        map.put("createdDate", date);
+        map.put("lastModifiedDate", date);
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        namedParameterJdbcTemplate.update(sql,new MapSqlParameterSource(map),keyHolder);
+        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
 
         int userId = keyHolder.getKey().intValue();
 
@@ -50,15 +50,34 @@ public class UserDaoImpl implements UserDao {
         String sql = "SELECT user_id,email,password,created_date,last_modified_date " +
                 "FROM user WHERE user_id = :userId";
 
-        Map<String,Object> map = new HashMap<>();
-        map.put("userId",userId);
+        Map<String, Object> map = new HashMap<>();
+        map.put("userId", userId);
 
-        List<User> userList = namedParameterJdbcTemplate.query(sql,map,new UserRowMapper());
+        List<User> userList = namedParameterJdbcTemplate.query(sql, map, new UserRowMapper());
 
-        if (userList.size() > 0){
+        if (userList.size() > 0) {
             return userList.get(0);
-        }else {
+        } else {
             return null;
         }
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+
+        String sql = "SELECT user_id,email,password,created_date,last_modified_date " +
+                "FROM user WHERE email = :email";
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("email", email);
+
+        List<User> userList = namedParameterJdbcTemplate.query(sql, map, new UserRowMapper());
+
+        if (userList.size() > 0) {
+            return userList.get(0);
+        } else {
+            return null;
+        }
+
     }
 }
