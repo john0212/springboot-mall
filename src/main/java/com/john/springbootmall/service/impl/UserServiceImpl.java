@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
 @Component
 public class UserServiceImpl implements UserService {
 
@@ -35,6 +37,7 @@ public class UserServiceImpl implements UserService {
         // 因為 md5DigestAsHex() 裡面要放 byte 型別的資料，所以要再透過 .getBytes() 把資料轉成 byte 型別
         String hashedPassword = DigestUtils.md5DigestAsHex(userRegisterRequest.getPassword().getBytes());
         userRegisterRequest.setPassword(hashedPassword);
+
 
         // 創建帳號
         return userDao.createUser(userRegisterRequest);
