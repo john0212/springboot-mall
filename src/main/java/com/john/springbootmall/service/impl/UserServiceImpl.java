@@ -36,6 +36,13 @@ public class UserServiceImpl implements UserService {
         // 使用 MD5 生成密碼雜湊值
         // 因為 md5DigestAsHex() 裡面要放 byte 型別的資料，所以要再透過 .getBytes() 把資料轉成 byte 型別
         String hashedPassword = DigestUtils.md5DigestAsHex(userRegisterRequest.getPassword().getBytes());
+
+//        String oldPassword = userRegisterRequest.getPassword();
+//
+//        String salt = UUID.randomUUID().toString();
+//
+//        String hashedPassword = getMd5Password(oldPassword,salt);
+
         userRegisterRequest.setPassword(hashedPassword);
 
 
@@ -62,6 +69,11 @@ public class UserServiceImpl implements UserService {
         // 使用 MD5 生成密碼雜湊值
         String hashedPassword = DigestUtils.md5DigestAsHex(userLoginRequest.getPassword().getBytes());
 
+//        String oldPassword = userLoginRequest.getPassword();
+//
+//        String salt = UUID.randomUUID().toString();
+//
+//        String hashedPassword = getMd5Password(oldPassword,salt);
 
         // 比較密碼
         // 在判斷資料庫的密碼是否跟前端傳過來的一樣
@@ -71,5 +83,13 @@ public class UserServiceImpl implements UserService {
             log.warn("email {} 的密碼不正確", userLoginRequest.getPassword());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    private String getMd5Password(String password,String salt){
+
+        for (int i=0;i<3;i++){
+            password = DigestUtils.md5DigestAsHex((salt + password + salt).getBytes());
+        }
+        return  password;
     }
 }
