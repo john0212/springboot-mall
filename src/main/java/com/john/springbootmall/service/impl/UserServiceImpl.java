@@ -18,6 +18,8 @@ import java.util.UUID;
 @Component
 public class UserServiceImpl implements UserService {
 
+//    private String salt = UUID.randomUUID().toString();
+
     private final static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
@@ -37,13 +39,22 @@ public class UserServiceImpl implements UserService {
         // 因為 md5DigestAsHex() 裡面要放 byte 型別的資料，所以要再透過 .getBytes() 把資料轉成 byte 型別
         String hashedPassword = DigestUtils.md5DigestAsHex(userRegisterRequest.getPassword().getBytes());
 
+        String salt = DigestUtils.md5DigestAsHex(userRegisterRequest.getEmail().getBytes());
+
+        System.out.println(salt + hashedPassword);
+
+        String result = salt.concat(hashedPassword);
+
+        System.out.println("register result: " + result);
+
+        // 使用 MD5 + 加鹽
 //        String oldPassword = userRegisterRequest.getPassword();
 //
-//        String salt = UUID.randomUUID().toString();
+//        System.out.println("上方: "+salt);
 //
 //        String hashedPassword = getMd5Password(oldPassword,salt);
 
-        userRegisterRequest.setPassword(hashedPassword);
+        userRegisterRequest.setPassword(result);
 
 
         // 創建帳號
@@ -69,15 +80,24 @@ public class UserServiceImpl implements UserService {
         // 使用 MD5 生成密碼雜湊值
         String hashedPassword = DigestUtils.md5DigestAsHex(userLoginRequest.getPassword().getBytes());
 
+        String salt = DigestUtils.md5DigestAsHex(userLoginRequest.getEmail().getBytes());
+
+        System.out.println(salt + hashedPassword);
+
+        String result = salt.concat(hashedPassword);
+
+        System.out.println("login result: " + result);
+
+        // 使用 MD5 + 加鹽
 //        String oldPassword = userLoginRequest.getPassword();
 //
-//        String salt = UUID.randomUUID().toString();
+//        System.out.println("下方: " + salt);
 //
 //        String hashedPassword = getMd5Password(oldPassword,salt);
 
         // 比較密碼
         // 在判斷資料庫的密碼是否跟前端傳過來的一樣
-        if (user.getPassword().equals(hashedPassword)) {
+        if (user.getPassword().equals(result)) {
             return user;
         } else {
             log.warn("email {} 的密碼不正確", userLoginRequest.getPassword());
